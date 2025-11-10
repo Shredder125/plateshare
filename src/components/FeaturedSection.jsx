@@ -14,24 +14,27 @@ export default function FeaturedSection() {
         console.error("Error fetching foods:", err);
       }
     };
-
     fetchFoods();
   }, []);
 
   return (
     <section className="py-20 bg-gray-900 text-white">
-      <div className="max-w-7xl mx-auto px-6 text-center">
-        <h2 className="text-4xl font-extrabold mb-12 bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-yellow-400">
+      <div className="max-w-7xl mx-auto px-6">
+        <h2 className="text-4xl md:text-5xl font-extrabold mb-12 text-center bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-yellow-400">
           Featured Foods
         </h2>
 
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-10">
-          {foods.length > 0 ? (
-            foods.map((food) => <FoodCard key={food._id} food={food} />)
-          ) : (
-            <p className="text-gray-400 col-span-full">No foods available.</p>
-          )}
-        </div>
+        {foods.length > 0 ? (
+          <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
+            {foods.map((food) => (
+              <FoodCard key={food._id} food={food} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-400 text-center text-lg">
+            No foods available right now.
+          </p>
+        )}
       </div>
     </section>
   );
