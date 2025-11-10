@@ -19,7 +19,13 @@ export default function Hero() {
   }, []);
 
   return (
-    <div className="relative h-screen w-full overflow-hidden">
+    <section
+      className="
+        relative w-full overflow-hidden
+        h-[60vh] sm:h-[70vh] md:h-[85vh] lg:h-screen
+        flex items-center justify-center
+      "
+    >
       {images.map((img, index) => (
         <div
           key={index}
@@ -34,20 +40,19 @@ export default function Hero() {
         />
       ))}
 
-      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-gray-900/70 to-black/90" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
 
-      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6">
-        <h1 className="text-5xl md:text-6xl font-extrabold text-white drop-shadow-lg mb-4">
+      <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 md:px-8 max-w-3xl">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] leading-tight">
           Share Food, Spread Love
         </h1>
-        <p className="text-lg md:text-xl text-gray-300 max-w-2xl mb-6">
-          PlateShare connects people with surplus food to those who need it.
-          Together, let’s fight food waste and feed more.
+        <p className="mt-2 sm:mt-4 text-sm sm:text-base md:text-lg lg:text-xl text-gray-300 max-w-xl leading-relaxed">
+          PlateShare connects people with surplus food to those who need it. Together, let’s fight food waste and feed more.
         </p>
-        <button className="px-8 py-3 rounded-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 text-black font-bold text-lg hover:scale-105 hover:shadow-xl transition-all duration-300">
+        <button className="mt-4 sm:mt-6 px-5 sm:px-7 py-2 sm:py-3 bg-gradient-to-r from-orange-400 via-orange-500 to-yellow-400 text-black font-semibold text-sm sm:text-base rounded-full shadow-lg hover:scale-105 transition-transform duration-300">
           View All Foods
         </button>
       </div>
-    </div>
+    </section>
   );
 }
