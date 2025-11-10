@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { FaUtensils, FaHandsHelping, FaUsers, FaTruck } from "react-icons/fa";
 
 const statsData = [
@@ -8,15 +8,15 @@ const statsData = [
   { icon: <FaTruck />, value: 6000, label: "Meals Delivered" },
 ];
 
-function AnimatedNumber({ value }) {
+function AnimatedNumber({ value, trigger }) {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
+    if (!trigger) return;
     let start = 0;
     const end = value;
     const duration = 2000;
     const increment = Math.ceil(end / (duration / 30));
-
     const counter = setInterval(() => {
       start += increment;
       if (start >= end) {
@@ -25,9 +25,8 @@ function AnimatedNumber({ value }) {
       }
       setCount(start);
     }, 30);
-
     return () => clearInterval(counter);
-  }, [value]);
+  }, [value, trigger]);
 
   return (
     <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-300 animate-gradient-x">
@@ -37,24 +36,46 @@ function AnimatedNumber({ value }) {
 }
 
 export default function CommunityStats() {
-  return (
-    <section className="py-20 bg-gray-900 text-white relative overflow-hidden">
-      <div className="absolute inset-0 animate-pulse-slow bg-gradient-to-r from-gray-900 via-gray-800 to-black opacity-40 -z-10"></div>
+  const [inView, setInView] = useState(false);
+  const sectionRef = useRef(null);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.4 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => {
+      if (sectionRef.current) observer.unobserve(sectionRef.current);
+    };
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="py-20 bg-gray-900 text-white relative overflow-hidden"
+    >
+      <div className="absolute inset-0 animate-pulse-slow bg-gradient-to-r from-gray-900 via-gray-800 to-black opacity-40 -z-10" />
       <div className="max-w-7xl mx-auto px-6 text-center">
         <h2 className="text-4xl sm:text-5xl font-extrabold mb-12 bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-yellow-400 animate-gradient-x">
           Our Impact
         </h2>
-
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
           {statsData.map((stat, idx) => (
             <div
               key={idx}
               className="flex flex-col items-center justify-center p-6 rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black shadow-2xl hover:scale-105 transform transition-all duration-500"
             >
-              <div className="text-orange-400 mb-3 text-4xl sm:text-5xl animate-pulse">{stat.icon}</div>
+              <div className="text-orange-400 mb-3 text-4xl sm:text-5xl animate-pulse">
+                {stat.icon}
+              </div>
               <h3 className="text-3xl sm:text-4xl font-bold mb-1">
-                <AnimatedNumber value={stat.value} />
+                <AnimatedNumber value={stat.value} trigger={inView} />
               </h3>
               <p className="text-gray-300 text-sm sm:text-base">{stat.label}</p>
             </div>
