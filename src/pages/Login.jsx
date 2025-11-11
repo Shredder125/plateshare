@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { FcGoogle } from "react-icons/fc";
 
 const images = [
   "https://i.pinimg.com/1200x/7b/4c/a1/7b4ca11a68d9dc2bd3a239e3a6c7e0e9.jpg",
@@ -15,9 +16,13 @@ export default function Login() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % images.length);
-    }, 5000);
+    }, 8000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleGoogleAuth = () => {
+    console.log("Google auth clicked");
+  };
 
   return (
     <div className="relative w-full h-screen overflow-hidden flex items-center justify-center">
@@ -31,16 +36,30 @@ export default function Login() {
             backgroundImage: `url(${img})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
+            animation: index === current ? "kenburns 8s ease-in-out infinite" : "none",
           }}
         />
       ))}
 
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
 
-      <div className="relative z-10 w-full max-w-md mx-auto p-8 bg-gray-900/80 rounded-3xl shadow-2xl">
+      <div className="relative z-10 w-full max-w-md mx-auto p-8 bg-gray-900/70 rounded-3xl shadow-2xl">
         <h1 className="text-3xl sm:text-4xl font-extrabold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-yellow-400">
           Welcome Back!
         </h1>
+
+        <button
+          onClick={handleGoogleAuth}
+          className="flex items-center justify-center gap-3 w-full py-2 mb-4 rounded-lg bg-gray-800 hover:bg-gray-700 transition font-medium"
+        >
+          <FcGoogle size={24} /> Sign in with Google
+        </button>
+
+        <div className="flex items-center my-3">
+          <hr className="flex-1 border-gray-600" />
+          <span className="px-2 text-gray-400 text-sm">or</span>
+          <hr className="flex-1 border-gray-600" />
+        </div>
 
         <form className="flex flex-col gap-4">
           <input
@@ -69,6 +88,16 @@ export default function Login() {
           </Link>
         </p>
       </div>
+
+      <style>
+        {`
+          @keyframes kenburns {
+            0% { transform: scale(1) translate(0, 0); }
+            50% { transform: scale(1.05) translate(10px, 10px); }
+            100% { transform: scale(1) translate(0, 0); }
+          }
+        `}
+      </style>
     </div>
   );
 }

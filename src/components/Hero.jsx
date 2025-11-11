@@ -21,19 +21,11 @@ export default function Hero() {
   }, []);
 
   return (
-    <section
-      className="
-        relative w-full overflow-hidden
-        h-[60vh] sm:h-[70vh] md:h-[85vh] lg:h-screen
-        flex items-center justify-center
-      "
-    >
+    <section className="relative w-full overflow-hidden h-[60vh] sm:h-[70vh] md:h-[85vh] lg:h-screen flex items-center justify-center">
       {images.map((img, index) => (
         <div
           key={index}
-          className={`absolute inset-0 transition-opacity duration-[2000ms] ${
-            index === current ? "opacity-100" : "opacity-0"
-          }`}
+          className={`absolute inset-0 transition-opacity duration-[2000ms] ${index === current ? "opacity-100" : "opacity-0"}`}
           style={{
             backgroundImage: `url(${img})`,
             backgroundSize: "cover",
@@ -61,4 +53,3 @@ export default function Hero() {
     </section>
   );
 }
- 

@@ -6,7 +6,9 @@ import CommunityStats from "./components/CommunityStats";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import AvailableFoods from "./pages/AvailableFoods";
+import FoodDetails from "./pages/FoodDetails";
 import "./App.css";
 
 export default function App() {
@@ -37,7 +39,20 @@ export default function App() {
         }
       />
 
+      {/* Use _id as param to match MongoDB IDs */}
+      <Route
+        path="/food/:_id"
+        element={
+          <>
+            <Navbar />
+            <FoodDetails />
+            <Footer />
+          </>
+        }
+      />
+
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
       <Route
         path="*"
