@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const images = [
   "https://i.pinimg.com/1200x/7b/4c/a1/7b4ca11a68d9dc2bd3a239e3a6c7e0e9.jpg",
@@ -10,6 +11,7 @@ const images = [
 
 export default function Hero() {
   const [current, setCurrent] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -49,10 +51,14 @@ export default function Hero() {
         <p className="mt-2 sm:mt-4 text-sm sm:text-base md:text-lg lg:text-xl text-gray-300 max-w-xl leading-relaxed">
           PlateShare connects people with surplus food to those who need it. Together, let’s fight food waste and feed more.
         </p>
-        <button className="mt-4 sm:mt-6 px-5 sm:px-7 py-2 sm:py-3 bg-gradient-to-r from-orange-400 via-orange-500 to-yellow-400 text-black font-semibold text-sm sm:text-base rounded-full shadow-lg hover:scale-105 transition-transform duration-300">
+        <button
+          onClick={() => navigate("/available-foods")}
+          className="mt-4 sm:mt-6 px-5 sm:px-7 py-2 sm:py-3 bg-gradient-to-r from-orange-400 via-orange-500 to-yellow-400 text-black font-semibold text-sm sm:text-base rounded-full shadow-lg hover:scale-105 transition-transform duration-300"
+        >
           View All Foods
         </button>
       </div>
     </section>
   );
 }
+ 

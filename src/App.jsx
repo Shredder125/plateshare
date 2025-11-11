@@ -6,12 +6,12 @@ import CommunityStats from "./components/CommunityStats";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
+import AvailableFoods from "./pages/AvailableFoods";
 import "./App.css";
 
 export default function App() {
   return (
     <Routes>
-      {/* Home page route */}
       <Route
         path="/"
         element={
@@ -26,10 +26,19 @@ export default function App() {
         }
       />
 
-      {/* Login page route without Navbar */}
+      <Route
+        path="/available-foods"
+        element={
+          <>
+            <Navbar />
+            <AvailableFoods />
+            <Footer />
+          </>
+        }
+      />
+
       <Route path="/login" element={<Login />} />
 
-      {/* Optional catch-all route */}
       <Route
         path="*"
         element={

@@ -39,7 +39,7 @@ export default function Login() {
 
       <div className="relative z-10 w-full max-w-md mx-auto p-8 bg-gray-900/80 rounded-3xl shadow-2xl">
         <h1 className="text-3xl sm:text-4xl font-extrabold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-yellow-400">
-          Welcome Back !
+          Welcome Back!
         </h1>
 
         <form className="flex flex-col gap-4">

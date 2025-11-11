@@ -1,15 +1,25 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import FoodCard from "./FoodCard";
 
 export default function FeaturedSection() {
   const [foods, setFoods] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchFoods = async () => {
       try {
         const res = await fetch("http://localhost:5000/api/foods/featured");
         const data = await res.json();
-        setFoods(data);
+        const sorted = data
+          .map((food) => ({
+            ...food,
+            quantityNumber: parseInt(food.foodQuantity.match(/\d+/)?.[0] || 0),
+          }))
+          .sort((a, b) => b.quantityNumber - a.quantityNumber)
+          .slice(0, 6);
+
+        setFoods(sorted);
       } catch (err) {
         console.error("Error fetching foods:", err);
       }
@@ -35,7 +45,10 @@ export default function FeaturedSection() {
         </div>
 
         <div className="mt-8 flex justify-center">
-          <button className="px-6 py-3 rounded-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-semibold hover:from-orange-400 hover:to-yellow-400 transition duration-300 shadow-md">
+          <button
+            onClick={() => navigate("/available-foods")}
+            className="px-6 py-3 rounded-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-semibold hover:from-orange-400 hover:to-yellow-400 transition duration-300 shadow-md"
+          >
             Show All
           </button>
         </div>
