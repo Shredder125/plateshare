@@ -56,9 +56,34 @@ export default function CommunityStats() {
       ref={sectionRef}
       className="relative py-24 bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white overflow-hidden"
     >
+      <style>{`
+        @keyframes rotate-gradient {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+        .rotating-gradient {
+          animation: rotate-gradient 3s linear infinite;
+        }
+        @keyframes pulse-glow {
+          0%, 100% {
+            opacity: 0.5;
+          }
+          50% {
+            opacity: 1;
+          }
+        }
+        .pulse-glow {
+          animation: pulse-glow 2s ease-in-out infinite;
+        }
+      `}</style>
+
       <div className="absolute inset-0 opacity-30">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-yellow-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-yellow-500/20 rounded-full blur-3xl animate-pulse"></div>
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -86,25 +111,37 @@ export default function CommunityStats() {
               className="group relative"
               style={{ animationDelay: `${idx * 100}ms` }}
             >
-              <div className={`absolute -inset-0.5 bg-gradient-to-r ${stat.color} rounded-3xl blur opacity-30 group-hover:opacity-60 transition duration-500`}></div>
+              <div className="absolute -inset-1 rounded-3xl overflow-hidden">
+                <div className={`absolute inset-0 bg-gradient-to-r ${stat.color} blur-xl opacity-60 pulse-glow`}></div>
+                <div className={`absolute -inset-[200%] bg-gradient-to-r ${stat.color} opacity-75 rotating-gradient`}></div>
+              </div>
               
-              <div className="relative flex flex-col items-center justify-center p-8 rounded-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-gray-800 hover:border-orange-500/50 transform hover:scale-105 transition-all duration-500 shadow-2xl">
-                <div className={`w-16 h-16 mb-6 rounded-2xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform duration-500`}>
-                  <span className="text-white text-3xl">
+              <div className="relative flex flex-col items-center justify-center p-8 rounded-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-black border-2 border-gray-800 group-hover:border-orange-500/50 transform group-hover:scale-105 transition-all duration-500 shadow-2xl">
+                <div className="absolute inset-0 rounded-3xl overflow-hidden">
+                  <div className={`absolute -inset-[100%] bg-[conic-gradient(from_0deg,transparent_0deg_340deg,var(--gradient-color)_340deg_360deg)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 rotating-gradient`} style={{ '--gradient-color': stat.color.includes('orange-500') ? '#f97316' : '#eab308' }}></div>
+                </div>
+
+                <div className={`relative w-20 h-20 mb-6 rounded-2xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-2xl transform group-hover:rotate-12 group-hover:scale-110 transition-all duration-500`}>
+                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${stat.color} blur-lg opacity-50 group-hover:opacity-100 pulse-glow`}></div>
+                  <span className="relative text-white text-4xl">
                     {stat.icon}
                   </span>
                 </div>
                 
-                <h3 className={`text-5xl font-extrabold mb-3 text-transparent bg-clip-text bg-gradient-to-r ${stat.color}`}>
+                <h3 className={`relative text-6xl font-extrabold mb-3 text-transparent bg-clip-text bg-gradient-to-r ${stat.color}`}>
                   <AnimatedNumber value={stat.value} trigger={inView} />
-                  <span className="text-3xl">+</span>
+                  <span className="text-4xl">+</span>
                 </h3>
                 
-                <p className="text-gray-300 font-semibold text-base text-center">
+                <p className="relative text-gray-300 font-semibold text-base text-center">
                   {stat.label}
                 </p>
 
-                <div className={`absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r ${stat.color} rounded-b-3xl transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500`}></div>
+                <div className={`absolute inset-x-0 bottom-0 h-1.5 bg-gradient-to-r ${stat.color} rounded-b-3xl transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 shadow-lg`}></div>
+                
+                <div className="absolute -inset-2 rounded-3xl overflow-hidden pointer-events-none">
+                  <div className={`absolute inset-0 bg-gradient-to-r ${stat.color} opacity-0 group-hover:opacity-30 blur-2xl transition-opacity duration-500`}></div>
+                </div>
               </div>
             </div>
           ))}
