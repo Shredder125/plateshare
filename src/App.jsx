@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AvailableFoods from "./pages/AvailableFoods";
 import FoodDetails from "./pages/FoodDetails";
+import PrivateRoute from "./PrivateRoute"; // <-- import it
 import "./App.css";
 
 export default function App() {
@@ -31,11 +32,11 @@ export default function App() {
       <Route
         path="/available-foods"
         element={
-          <>
+          <PrivateRoute>
             <Navbar />
             <AvailableFoods />
             <Footer />
-          </>
+          </PrivateRoute>
         }
       />
 
