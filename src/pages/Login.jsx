@@ -4,8 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaHandshake, FaEnvelope, FaLock } from "react-icons/fa";
 import { auth } from "../firebase";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useToast } from "../App";
 
 const images = [
   "https://i.ibb.co/GvJG4qn8/download-9.jpg",
@@ -25,6 +24,7 @@ export default function Login() {
   const [currentImage, setCurrentImage] = useState(0);
   const [formData, setFormData] = useState({ email: "", password: "" });
   const navigate = useNavigate();
+  const toast = useToast();
 
   useEffect(() => {
     const interval = setInterval(() => {

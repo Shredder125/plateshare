@@ -5,8 +5,7 @@ import { FaHandshake, FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 import Marquee from "react-fast-marquee";
 import { auth } from "../firebase";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useToast } from "../App";
 
 const images = [
   "https://i.ibb.co/GvJG4qn8/download-9.jpg",
@@ -31,6 +30,7 @@ export default function Register() {
   });
 
   const navigate = useNavigate();
+  const toast = useToast();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
