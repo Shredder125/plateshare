@@ -1,4 +1,4 @@
-import { useState, createContext, useContext } from "react";
+import { useState, useEffect, createContext, useContext } from "react";
 import { Routes, Route } from "react-router-dom";
 import Hero from "./components/Hero";
 import HowItWorks from "./components/HowItWorks";
@@ -11,10 +11,13 @@ import Register from "./pages/Register";
 import AvailableFoods from "./pages/AvailableFoods";
 import FoodDetails from "./pages/FoodDetails";
 import AddFood from "./pages/AddFood";
+import ManageMyFoods from "./pages/ManageMyFoods";
 import PrivateRoute from "./PrivateRoute";
+import ErrorPage from "./pages/ErrorPage";
+import { auth } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import "./App.css";
 
-// Toast Context
 const ToastContext = createContext(null);
 
 export const useToast = () => {
@@ -23,16 +26,22 @@ export const useToast = () => {
   return context;
 };
 
-// Toast Component
 function Toast({ message, type, onClose }) {
   return (
     <div
       className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg text-white animate-slide-in mb-2 ${
-        type === "success" ? "bg-green-600" : type === "error" ? "bg-red-600" : "bg-blue-600"
+        type === "success"
+          ? "bg-green-600"
+          : type === "error"
+          ? "bg-red-600"
+          : "bg-blue-600"
       }`}
     >
       <span className="flex-1">{message}</span>
-      <button onClick={onClose} className="text-white hover:text-gray-200 font-bold">
+      <button
+        onClick={onClose}
+        className="text-white hover:text-gray-200 font-bold"
+      >
         ×
       </button>
     </div>
@@ -40,7 +49,24 @@ function Toast({ message, type, onClose }) {
 }
 
 export default function App() {
+  const [user, setUser] = useState(null);
   const [toasts, setToasts] = useState([]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser({
+          name: currentUser.displayName || currentUser.email,
+          email: currentUser.email,
+          photoURL: currentUser.photoURL,
+          uid: currentUser.uid,
+        });
+      } else {
+        setUser(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   const showToast = (message, type) => {
     const id = Date.now();
@@ -62,13 +88,12 @@ export default function App() {
 
   return (
     <ToastContext.Provider value={toast}>
+      <Navbar user={user} />
       <Routes>
-        {/* Home */}
         <Route
           path="/"
           element={
             <>
-              <Navbar />
               <Hero />
               <FeaturedSection />
               <CommunityStats />
@@ -77,64 +102,54 @@ export default function App() {
             </>
           }
         />
-
-        {/* Public Available Foods */}
         <Route
           path="/available-foods"
           element={
             <>
-              <Navbar />
               <AvailableFoods />
               <Footer />
             </>
           }
         />
-
-        {/* Private Add Food */}
         <Route
           path="/add-food"
           element={
             <PrivateRoute>
-              <Navbar />
               <AddFood />
               <Footer />
             </PrivateRoute>
           }
         />
-
-        {/* Private Food Details */}
         <Route
           path="/food/:_id"
           element={
             <PrivateRoute>
-              <Navbar />
               <FoodDetails />
               <Footer />
             </PrivateRoute>
           }
         />
-
-        {/* Auth */}
+        <Route
+          path="/manage-my-foods"
+          element={
+            <PrivateRoute>
+              <ManageMyFoods user={user} />
+              <Footer />
+            </PrivateRoute>
+          }
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
-        {/* Catch-all / 404 */}
         <Route
           path="*"
           element={
             <>
-              <Navbar />
-              <Hero />
-              <FeaturedSection />
-              <CommunityStats />
-              <HowItWorks />
+              <ErrorPage />
               <Footer />
             </>
           }
         />
       </Routes>
-
-      {/* Toast Container */}
       <div className="fixed top-4 right-4 z-[9999] max-w-sm">
         {toasts.map((toast) => (
           <Toast key={toast.id} {...toast} onClose={() => removeToast(toast.id)} />

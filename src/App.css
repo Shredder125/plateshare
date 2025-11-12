@@ -8,7 +8,7 @@
 
 html,
 body {
-  margin: 0;
+  margin: auto;
   padding: 0;
   background-color: #000;
   color: white;
@@ -39,4 +39,5 @@ body {
     animation: slide-in 0.5s ease-out forwards;
   }
 }
+
 
