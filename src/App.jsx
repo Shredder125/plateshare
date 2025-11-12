@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AvailableFoods from "./pages/AvailableFoods";
 import FoodDetails from "./pages/FoodDetails";
+import AddFood from "./pages/AddFood";
 import PrivateRoute from "./PrivateRoute";
 import "./App.css";
 
@@ -22,7 +23,7 @@ export const useToast = () => {
   return context;
 };
 
-// Custom Toast Component
+// Toast Component
 function Toast({ message, type, onClose }) {
   return (
     <div
@@ -41,18 +42,18 @@ function Toast({ message, type, onClose }) {
 export default function App() {
   const [toasts, setToasts] = useState([]);
 
-  const toast = {
-    success: (message) => showToast(message, "success"),
-    error: (message) => showToast(message, "error"),
-    info: (message) => showToast(message, "info"),
-  };
-
   const showToast = (message, type) => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 3000);
+  };
+
+  const toast = {
+    success: (message) => showToast(message, "success"),
+    error: (message) => showToast(message, "error"),
+    info: (message) => showToast(message, "info"),
   };
 
   const removeToast = (id) => {
@@ -62,6 +63,7 @@ export default function App() {
   return (
     <ToastContext.Provider value={toast}>
       <Routes>
+        {/* Home */}
         <Route
           path="/"
           element={
@@ -76,31 +78,47 @@ export default function App() {
           }
         />
 
+        {/* Public Available Foods */}
         <Route
           path="/available-foods"
           element={
-            <PrivateRoute>
-              <Navbar />
-              <AvailableFoods />
-              <Footer />
-            </PrivateRoute>
-          }
-        />
-
-        <Route
-          path="/food/:_id"
-          element={
             <>
               <Navbar />
-              <FoodDetails />
+              <AvailableFoods />
               <Footer />
             </>
           }
         />
 
+        {/* Private Add Food */}
+        <Route
+          path="/add-food"
+          element={
+            <PrivateRoute>
+              <Navbar />
+              <AddFood />
+              <Footer />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Private Food Details */}
+        <Route
+          path="/food/:_id"
+          element={
+            <PrivateRoute>
+              <Navbar />
+              <FoodDetails />
+              <Footer />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
+        {/* Catch-all / 404 */}
         <Route
           path="*"
           element={
@@ -117,7 +135,6 @@ export default function App() {
       </Routes>
 
       {/* Toast Container */}
-      {/* UPDATE: Increased z-index to ensure toasts appear above all other content */}
       <div className="fixed top-4 right-4 z-[9999] max-w-sm">
         {toasts.map((toast) => (
           <Toast key={toast.id} {...toast} onClose={() => removeToast(toast.id)} />

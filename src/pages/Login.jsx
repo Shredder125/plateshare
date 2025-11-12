@@ -185,7 +185,7 @@ export default function Login() {
                   className="group relative w-full py-3 rounded-xl bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-500 text-black font-bold text-lg shadow-2xl hover:shadow-orange-500/50 transition-all duration-300 hover:scale-105 overflow-hidden"
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
-                    Sign In
+                    Login
                   </span>
                 </button>
               </form>
