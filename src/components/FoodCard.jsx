@@ -10,7 +10,6 @@ export default function FoodCard({ food }) {
 
   return (
     <div className="group relative bg-gradient-to-br from-gray-900 via-gray-800 to-black rounded-3xl shadow-2xl overflow-hidden transform hover:scale-105 hover:shadow-orange-500/20 transition-all duration-500 flex flex-col border border-gray-800 hover:border-orange-500/50">
-      {/* Image Section with Overlay */}
       <div className="h-48 sm:h-56 md:h-60 w-full overflow-hidden rounded-t-3xl relative">
         <img
           src={food.foodImage || "https://via.placeholder.com/400x250"}
@@ -18,28 +17,21 @@ export default function FoodCard({ food }) {
           className="h-full w-full object-cover transform group-hover:scale-110 transition-transform duration-700"
         />
         
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300"></div>
         
-        {/* Status Badge */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300"></div>
         {isAvailable && (
           <div className="absolute top-4 right-4 flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm">
             <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
             <span className="text-white text-xs font-semibold">Available</span>
           </div>
         )}
-        
-        {/* Food Name Overlay on Image */}
         <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
           <h3 className="text-xl sm:text-2xl font-bold text-white line-clamp-2 drop-shadow-lg">
             {food.foodName}
           </h3>
         </div>
       </div>
-
-      {/* Content Section */}
       <div className="p-5 flex flex-col justify-between flex-1 space-y-4">
-        {/* Donator Info with Icon */}
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 flex items-center justify-center shadow-lg">
             <span className="text-white text-sm font-bold">
@@ -54,7 +46,7 @@ export default function FoodCard({ food }) {
           </div>
         </div>
 
-        {/* Details Grid */}
+        
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-gray-300">
             <svg className="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -81,7 +73,7 @@ export default function FoodCard({ food }) {
           </div>
         </div>
 
-        {/* View Details Button */}
+       
         <button
           onClick={handleViewDetails}
           className="mt-auto w-full py-3 rounded-full bg-gradient-to-r from-orange-500 via-orange-400 to-yellow-500 text-black font-bold text-sm sm:text-base hover:from-orange-400 hover:via-yellow-500 hover:to-yellow-400 transition-all duration-300 shadow-lg hover:shadow-orange-500/50 transform hover:-translate-y-0.5 active:translate-y-0"

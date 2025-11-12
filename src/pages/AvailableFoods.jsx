@@ -62,7 +62,7 @@ export default function AvailableFoods() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-      {/* Hero Header Section */}
+      
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-yellow-500/10 to-orange-500/10 blur-3xl"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
@@ -87,11 +87,11 @@ export default function AvailableFoods() {
         </div>
       </div>
 
-      {/* Filters Section */}
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <div className="bg-gradient-to-br from-gray-800/50 via-gray-900/50 to-black/50 backdrop-blur-xl rounded-3xl border border-gray-800/50 p-6 shadow-2xl">
           <div className="flex flex-col lg:flex-row lg:items-center gap-4">
-            {/* Search Input */}
+           
             <div className="flex-1 relative group">
               <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
                 <svg className="w-5 h-5 text-gray-400 group-focus-within:text-orange-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,7 +107,6 @@ export default function AvailableFoods() {
               />
             </div>
 
-            {/* Location Filter */}
             <div className="flex-1 relative group">
               <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
                 <svg className="w-5 h-5 text-gray-400 group-focus-within:text-orange-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,7 +123,7 @@ export default function AvailableFoods() {
               />
             </div>
 
-            {/* Available Only Toggle */}
+           
             <label className="flex items-center gap-3 px-6 py-3.5 rounded-2xl bg-gray-800/80 border border-gray-700 cursor-pointer hover:border-orange-500/50 transition-all group">
               <input
                 type="checkbox"
@@ -138,7 +137,7 @@ export default function AvailableFoods() {
             </label>
           </div>
 
-          {/* Active Filters Display */}
+
           {(search || locationFilter || showAvailableOnly) && (
             <div className="mt-4 flex flex-wrap items-center gap-2">
               <span className="text-sm text-gray-400">Active filters:</span>
@@ -174,8 +173,6 @@ export default function AvailableFoods() {
           )}
         </div>
       </div>
-
-      {/* Food Cards Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         {!filteredFoods.length ? (
           <div className="flex flex-col items-center justify-center py-20 space-y-4">
