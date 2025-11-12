@@ -124,7 +124,8 @@ export default function App() {
           path="/food/:_id"
           element={
             <PrivateRoute>
-              <FoodDetails />
+              {/* Pass user as prop */}
+              <FoodDetails user={user} />
               <Footer />
             </PrivateRoute>
           }
