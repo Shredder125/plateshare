@@ -15,9 +15,10 @@ export default function AvailableFoods() {
     const fetchFoods = async () => {
       try {
         const res = await fetch(`${API_BASE_URL}/api/foods`);
+        if (!res.ok) throw new Error("Failed to fetch foods");
         const data = await res.json();
-        setFoods(data);
-        setFilteredFoods(data);
+        setFoods(Array.isArray(data) ? data : []);
+        setFilteredFoods(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Error fetching foods:", err);
       } finally {
@@ -29,25 +30,21 @@ export default function AvailableFoods() {
 
   useEffect(() => {
     let tempFoods = [...foods];
-
     if (search.trim()) {
       tempFoods = tempFoods.filter((food) =>
         (food.foodName || "").toLowerCase().includes(search.toLowerCase())
       );
     }
-
     if (locationFilter.trim()) {
       tempFoods = tempFoods.filter((food) =>
         (food.pickupLocation || "").toLowerCase().includes(locationFilter.toLowerCase())
       );
     }
-
     if (showAvailableOnly) {
       tempFoods = tempFoods.filter(
         (food) => (food.food_status || "").toLowerCase() === "available"
       );
     }
-
     setFilteredFoods(tempFoods);
   }, [search, locationFilter, showAvailableOnly, foods]);
 
