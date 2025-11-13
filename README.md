@@ -1,6 +1,6 @@
 PlateShare - Community Food Sharing Platform
 
-Livelink - 
+Livelink - https://platesharefront.netlify.app/
 
 PlateShare is a full-stack MERN application designed to reduce food waste by connecting people with surplus food to those in need. Key features of the platform include:
 
