@@ -27,6 +27,8 @@ export const useToast = () => {
   return context;
 };
 
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 function Toast({ message, type, onClose }) {
   return (
     <div
@@ -185,7 +187,7 @@ export default function App() {
             path="/available-foods"
             element={
               <>
-                <AvailableFoods />
+                <AvailableFoods API_BASE_URL={API_BASE_URL} />
                 <Footer />
               </>
             }
@@ -194,7 +196,7 @@ export default function App() {
             path="/add-food"
             element={
               <PrivateRoute>
-                <AddFood />
+                <AddFood API_BASE_URL={API_BASE_URL} />
                 <Footer />
               </PrivateRoute>
             }
@@ -203,7 +205,7 @@ export default function App() {
             path="/food/:_id"
             element={
               <PrivateRoute>
-                <FoodDetails user={user} />
+                <FoodDetails API_BASE_URL={API_BASE_URL} user={user} />
                 <Footer />
               </PrivateRoute>
             }
@@ -212,13 +214,13 @@ export default function App() {
             path="/manage-my-foods"
             element={
               <PrivateRoute>
-                <ManageMyFoods user={user} />
+                <ManageMyFoods API_BASE_URL={API_BASE_URL} user={user} />
                 <Footer />
               </PrivateRoute>
             }
           />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login API_BASE_URL={API_BASE_URL} />} />
+          <Route path="/register" element={<Register API_BASE_URL={API_BASE_URL} />} />
           <Route
             path="*"
             element={

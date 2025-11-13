@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import FoodCard from "../components/FoodCard";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export default function AvailableFoods() {
   const [foods, setFoods] = useState([]);
   const [filteredFoods, setFilteredFoods] = useState([]);
@@ -12,7 +14,7 @@ export default function AvailableFoods() {
   useEffect(() => {
     const fetchFoods = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/foods");
+        const res = await fetch(`${API_BASE_URL}/api/foods`);
         const data = await res.json();
         setFoods(data);
         setFilteredFoods(data);
@@ -62,7 +64,6 @@ export default function AvailableFoods() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-      
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-yellow-500/10 to-orange-500/10 blur-3xl"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
@@ -87,11 +88,9 @@ export default function AvailableFoods() {
         </div>
       </div>
 
-      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <div className="bg-gradient-to-br from-gray-800/50 via-gray-900/50 to-black/50 backdrop-blur-xl rounded-3xl border border-gray-800/50 p-6 shadow-2xl">
           <div className="flex flex-col lg:flex-row lg:items-center gap-4">
-           
             <div className="flex-1 relative group">
               <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
                 <svg className="w-5 h-5 text-gray-400 group-focus-within:text-orange-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -123,7 +122,6 @@ export default function AvailableFoods() {
               />
             </div>
 
-           
             <label className="flex items-center gap-3 px-6 py-3.5 rounded-2xl bg-gray-800/80 border border-gray-700 cursor-pointer hover:border-orange-500/50 transition-all group">
               <input
                 type="checkbox"
@@ -136,7 +134,6 @@ export default function AvailableFoods() {
               </span>
             </label>
           </div>
-
 
           {(search || locationFilter || showAvailableOnly) && (
             <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -173,6 +170,7 @@ export default function AvailableFoods() {
           )}
         </div>
       </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         {!filteredFoods.length ? (
           <div className="flex flex-col items-center justify-center py-20 space-y-4">

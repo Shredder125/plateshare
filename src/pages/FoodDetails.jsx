@@ -9,6 +9,7 @@ Modal.setAppElement("#root");
 export default function FoodDetails({ user }) {
   const { _id } = useParams();
   const navigate = useNavigate();
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
   const [food, setFood] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,7 +26,7 @@ export default function FoodDetails({ user }) {
   useEffect(() => {
     const fetchFood = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/foods/${_id}`);
+        const res = await fetch(`${API_BASE}/api/foods/${_id}`);
         if (!res.ok) {
           const errorData = await res.json();
           throw new Error(errorData.message || "Food not found");
@@ -51,7 +52,7 @@ export default function FoodDetails({ user }) {
   const fetchFoodRequests = async () => {
     try {
       setLoadingRequests(true);
-      const res = await axios.get(`http://localhost:5000/api/food-requests/${_id}`);
+      const res = await axios.get(`${API_BASE}/api/food-requests/${_id}`);
       setFoodRequests(res.data);
     } catch (err) {
       console.error("Error fetching requests:", err);
@@ -62,16 +63,13 @@ export default function FoodDetails({ user }) {
 
   const handleAcceptRequest = async (requestId) => {
     try {
-      await axios.put(`http://localhost:5000/api/food-requests/${requestId}/accept`, {
+      await axios.put(`${API_BASE}/api/food-requests/${requestId}/accept`, {
         foodId: _id
       });
-      
       toast.success("Request accepted!");
-      
-      const res = await fetch(`http://localhost:5000/api/foods/${_id}`);
+      const res = await fetch(`${API_BASE}/api/foods/${_id}`);
       const updatedFood = await res.json();
       setFood(updatedFood);
-      
       fetchFoodRequests();
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to accept request");
@@ -80,8 +78,7 @@ export default function FoodDetails({ user }) {
 
   const handleRejectRequest = async (requestId) => {
     try {
-      await axios.put(`http://localhost:5000/api/food-requests/${requestId}/reject`);
-      
+      await axios.put(`${API_BASE}/api/food-requests/${requestId}/reject`);
       toast.success("Request rejected!");
       fetchFoodRequests();
     } catch (err) {
@@ -112,19 +109,8 @@ export default function FoodDetails({ user }) {
     setSubmitting(true);
 
     try {
-      console.log("FRONTEND: Sending request for foodId:", _id);
-      console.log("Request payload:", {
-        foodId: _id,
-        userEmail: user.email,
-        name: user.name,
-        photoURL: user.photoURL || "",
-        location: location.trim(),
-        reason: reason.trim(),
-        contactNo: contact.trim(),
-      });
-
       const response = await axios.post(
-        "http://localhost:5000/api/food-requests",
+        `${API_BASE}/api/food-requests`,
         {
           foodId: _id,
           userEmail: user.email,
@@ -135,31 +121,22 @@ export default function FoodDetails({ user }) {
           contactNo: contact.trim(),
         },
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           timeout: 10000,
         }
       );
 
-      console.log("Request submitted successfully:", response.data);
       toast.success("Food request submitted successfully!");
-
       setIsModalOpen(false);
       setLocation("");
       setReason("");
       setContact("");
     } catch (err) {
-      console.error("Food request error:", err);
-
       if (err.response) {
-        console.error("Response error:", err.response.status, err.response.data);
         toast.error(err.response.data?.message || "Failed to submit request");
       } else if (err.request) {
-        console.error("Request made but no response received");
-        toast.error("No response from server. Check if backend is running on localhost:5000");
+        toast.error("No response from server. Check if backend is running.");
       } else {
-        console.error("Error message:", err.message);
         toast.error("An error occurred. Please try again.");
       }
     } finally {
@@ -194,18 +171,8 @@ export default function FoodDetails({ user }) {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex flex-col justify-center items-center px-4">
         <div className="max-w-md w-full bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl border border-red-500/30 p-8 text-center space-y-6 shadow-2xl">
           <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-red-500/20 to-red-600/20 flex items-center justify-center border border-red-500/50">
-            <svg
-              className="w-10 h-10 text-red-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
+            <svg className="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <h2 className="text-2xl font-bold text-red-400">Oops! Something went wrong</h2>
@@ -226,12 +193,10 @@ export default function FoodDetails({ user }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white px-4 py-16 relative">
       <Toaster position="top-right" />
-      
       <div className="absolute inset-0 opacity-20 pointer-events-none">
         <div className="absolute top-20 left-10 w-96 h-96 bg-orange-500/30 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-yellow-500/30 rounded-full blur-3xl"></div>
       </div>
-
       <div className="relative max-w-5xl mx-auto">
         <button
           onClick={() => navigate("/available-foods")}
@@ -256,7 +221,7 @@ export default function FoodDetails({ user }) {
               className="h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-            
+
             {isAvailable ? (
               <div className="absolute top-6 right-6 flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2 rounded-full shadow-lg backdrop-blur-sm">
                 <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
@@ -268,7 +233,7 @@ export default function FoodDetails({ user }) {
                 <span className="text-white text-sm font-bold">Not Available</span>
               </div>
             )}
-            
+
             <div className="absolute bottom-6 left-6 right-6">
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white drop-shadow-2xl">
                 {food.foodName}
@@ -379,7 +344,6 @@ export default function FoodDetails({ user }) {
             {isOwner && (
               <div className="mt-12">
                 <h2 className="text-2xl font-bold text-white mb-6">Food Requests</h2>
-                
                 {loadingRequests ? (
                   <div className="flex justify-center py-8">
                     <div className="inline-block w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>

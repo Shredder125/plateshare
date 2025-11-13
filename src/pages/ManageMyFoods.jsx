@@ -11,13 +11,14 @@ export default function ManageMyFoods({ user }) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedFood, setSelectedFood] = useState(null);
   const toast = useToast();
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     if (!user?.email) return;
 
     const fetchFoods = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/foods/donator/${user.email}`);
+        const res = await fetch(`${API_BASE}/foods/donator/${user.email}`);
         const data = await res.json();
         setFoods(data);
       } catch (err) {
@@ -42,7 +43,7 @@ export default function ManageMyFoods({ user }) {
 
     if (confirm.isConfirmed) {
       try {
-        await fetch(`http://localhost:5000/api/foods/${id}`, { method: "DELETE" });
+        await fetch(`${API_BASE}/foods/${id}`, { method: "DELETE" });
         setFoods((prev) => prev.filter((f) => f._id !== id));
         toast.success("Food deleted successfully");
       } catch (err) {
@@ -65,7 +66,7 @@ export default function ManageMyFoods({ user }) {
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:5000/api/foods/${selectedFood._id}`, {
+      const res = await fetch(`${API_BASE}/foods/${selectedFood._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(selectedFood),

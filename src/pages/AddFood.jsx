@@ -21,7 +21,6 @@ export default function AddFood() {
     food_status: "available",
   });
 
-  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
@@ -30,7 +29,9 @@ export default function AddFood() {
           ...prev,
           donatorName: currentUser.displayName || "Anonymous",
           donatorEmail: currentUser.email,
-          donatorImage: currentUser.photoURL || "https://via.placeholder.com/150",
+          donatorImage:
+            currentUser.photoURL ||
+            "https://cdn-icons-png.flaticon.com/512/847/847969.png",
         }));
       } else {
         toast.error("You must be logged in to add food.");
@@ -39,6 +40,7 @@ export default function AddFood() {
     });
     return () => unsubscribe();
   }, [navigate, toast]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -47,11 +49,14 @@ export default function AddFood() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:5000/api/foods", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/foods`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to add food.");
 
@@ -72,11 +77,16 @@ export default function AddFood() {
           Add a New Food Item
         </h1>
 
-       
         <div className="p-4 border border-gray-700 rounded-xl bg-gray-800/50 mb-6">
-          <h2 className="text-lg font-semibold text-orange-400 mb-4">Your Information (Donator)</h2>
+          <h2 className="text-lg font-semibold text-orange-400 mb-4">
+            Your Information (Donator)
+          </h2>
           <div className="flex items-center gap-4">
-            <img src={formData.donatorImage} alt="Donator" className="w-16 h-16 rounded-full border-2 border-orange-500" />
+            <img
+              src={formData.donatorImage}
+              alt="Donator"
+              className="w-16 h-16 rounded-full border-2 border-orange-500"
+            />
             <div className="flex-1 space-y-2">
               <input
                 type="text"
@@ -94,11 +104,12 @@ export default function AddFood() {
           </div>
         </div>
 
-      
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Food Name</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Food Name
+              </label>
               <input
                 type="text"
                 name="foodName"
@@ -109,7 +120,9 @@ export default function AddFood() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Food Quantity</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Food Quantity
+              </label>
               <input
                 type="text"
                 name="foodQuantity"
@@ -120,7 +133,9 @@ export default function AddFood() {
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-300 mb-1">Food Image URL</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Food Image URL
+              </label>
               <input
                 type="url"
                 name="foodImage"
@@ -131,7 +146,9 @@ export default function AddFood() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Pickup Location</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Pickup Location
+              </label>
               <input
                 type="text"
                 name="pickupLocation"
@@ -142,7 +159,9 @@ export default function AddFood() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Expiration Date</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Expiration Date
+              </label>
               <input
                 type="date"
                 name="expireDate"
@@ -153,7 +172,9 @@ export default function AddFood() {
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-300 mb-1">Additional Notes</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Additional Notes
+              </label>
               <textarea
                 name="additionalNotes"
                 value={formData.additionalNotes}
