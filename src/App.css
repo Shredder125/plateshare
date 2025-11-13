@@ -39,3 +39,13 @@ body {
     animation: slide-in 0.5s ease-out forwards;
   }
 }
+
+
+.nunito-sans-normal {
+  font-family: "Nunito Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100,
+    "YTLC" 500;
+}
