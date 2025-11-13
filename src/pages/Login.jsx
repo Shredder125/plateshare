@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { FaHandshake, FaEnvelope, FaLock } from "react-icons/fa";
 import { auth } from "../firebase";
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from "firebase/auth";
 import { useToast } from "../App";
 
 const images = [
@@ -62,14 +62,27 @@ export default function Login() {
   const provider = new GoogleAuthProvider();
 
   const handleGoogleAuth = async () => {
-    try {
-      await signInWithPopup(auth, provider);
-      toast.success("Google sign-in successful!");
-      navigate("/");
-    } catch (error) {
-      toast.error(error.message);
+  try {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    // Google users have a displayName already, but let's ensure it's set
+    if (!user.displayName) {
+      await updateProfile(user, {
+        displayName: user.email.split('@')[0], // Use email prefix as fallback
+      });
     }
-  };
+
+    console.log("✅ Google sign-in successful!");
+    console.log("User name:", user.displayName || user.email.split('@')[0]);
+    
+    toast.success("Google sign-in successful!");
+    navigate("/");
+  } catch (error) {
+    toast.error(error.message);
+  }
+};
 
   return (
     <div className="min-h-screen w-full flex bg-gradient-to-br from-gray-900 via-black to-gray-900 overflow-hidden">

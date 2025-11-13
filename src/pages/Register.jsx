@@ -4,7 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaHandshake, FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 import Marquee from "react-fast-marquee";
 import { auth } from "../firebase";
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from "firebase/auth";
 import { useToast } from "../App";
 
 const images = [
@@ -55,12 +55,17 @@ export default function Register() {
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      toast.success("Registration successful!");
-      navigate("/");
-    } catch (error) {
-      toast.error(error.message);
-    }
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  await updateProfile(userCredential.user, {
+    displayName: name,
+  });
+
+  toast.success("Registration successful!");
+  navigate("/");
+} catch (error) {
+  toast.error(error.message);
+}
+
   };
 
   const provider = new GoogleAuthProvider();

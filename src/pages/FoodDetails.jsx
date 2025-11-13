@@ -13,15 +13,15 @@ export default function FoodDetails({ user }) {
   const [food, setFood] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [foodRequests, setFoodRequests] = useState([]);
+  const [loadingRequests, setLoadingRequests] = useState(false);
 
-  // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [location, setLocation] = useState("");
   const [reason, setReason] = useState("");
   const [contact, setContact] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // Fetch food details
   useEffect(() => {
     const fetchFood = async () => {
       try {
@@ -42,44 +42,78 @@ export default function FoodDetails({ user }) {
     if (_id) fetchFood();
   }, [_id]);
 
+  useEffect(() => {
+    if (food && user && food.donatorEmail === user.email) {
+      fetchFoodRequests();
+    }
+  }, [food, user]);
+
+  const fetchFoodRequests = async () => {
+    try {
+      setLoadingRequests(true);
+      const res = await axios.get(`http://localhost:5000/api/food-requests/${_id}`);
+      setFoodRequests(res.data);
+    } catch (err) {
+      console.error("Error fetching requests:", err);
+    } finally {
+      setLoadingRequests(false);
+    }
+  };
+
+  const handleAcceptRequest = async (requestId) => {
+    try {
+      await axios.put(`http://localhost:5000/api/food-requests/${requestId}/accept`, {
+        foodId: _id
+      });
+      
+      toast.success("Request accepted!");
+      
+      const res = await fetch(`http://localhost:5000/api/foods/${_id}`);
+      const updatedFood = await res.json();
+      setFood(updatedFood);
+      
+      fetchFoodRequests();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to accept request");
+    }
+  };
+
+  const handleRejectRequest = async (requestId) => {
+    try {
+      await axios.put(`http://localhost:5000/api/food-requests/${requestId}/reject`);
+      
+      toast.success("Request rejected!");
+      fetchFoodRequests();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to reject request");
+    }
+  };
+
   const isAvailable = (food?.food_status || "").toLowerCase() === "available";
 
-const handleRequestSubmit = async (e) => {
-  e.preventDefault();
+  const handleRequestSubmit = async (e) => {
+    e.preventDefault();
 
-  // Basic validation
-  if (!location.trim() || !reason.trim() || !contact.trim()) {
-    toast.error("Please fill all fields");
-    return;
-  }
+    if (!location.trim() || !reason.trim() || !contact.trim()) {
+      toast.error("Please fill all fields");
+      return;
+    }
 
-  if (!user) {
-    toast.error("You must be logged in to request food!");
-    return;
-  }
+    if (!user) {
+      toast.error("You must be logged in to request food!");
+      return;
+    }
 
-  if (!user.email || !user.name) {
-    toast.error("User info incomplete. Please log in again.");
-    return;
-  }
+    if (!user.email || !user.name) {
+      toast.error("User info incomplete. Please log in again.");
+      return;
+    }
 
-  setSubmitting(true);
+    setSubmitting(true);
 
-  try {
-    console.log("FRONTEND: Sending request for foodId:", _id);
-    console.log("Request payload:", {
-      foodId: _id,
-      userEmail: user.email,
-      name: user.name,
-      photoURL: user.photoURL || "",
-      location: location.trim(),
-      reason: reason.trim(),
-      contactNo: contact.trim(),
-    });
-
-    const response = await axios.post(
-      "http://localhost:5000/api/food-requests",
-      {
+    try {
+      console.log("FRONTEND: Sending request for foodId:", _id);
+      console.log("Request payload:", {
         foodId: _id,
         userEmail: user.email,
         name: user.name,
@@ -87,41 +121,51 @@ const handleRequestSubmit = async (e) => {
         location: location.trim(),
         reason: reason.trim(),
         contactNo: contact.trim(),
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
+      });
+
+      const response = await axios.post(
+        "http://localhost:5000/api/food-requests",
+        {
+          foodId: _id,
+          userEmail: user.email,
+          name: user.name,
+          photoURL: user.photoURL || "",
+          location: location.trim(),
+          reason: reason.trim(),
+          contactNo: contact.trim(),
         },
-        timeout: 10000, // 10 second timeout
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          timeout: 10000,
+        }
+      );
+
+      console.log("Request submitted successfully:", response.data);
+      toast.success("Food request submitted successfully!");
+
+      setIsModalOpen(false);
+      setLocation("");
+      setReason("");
+      setContact("");
+    } catch (err) {
+      console.error("Food request error:", err);
+
+      if (err.response) {
+        console.error("Response error:", err.response.status, err.response.data);
+        toast.error(err.response.data?.message || "Failed to submit request");
+      } else if (err.request) {
+        console.error("Request made but no response received");
+        toast.error("No response from server. Check if backend is running on localhost:5000");
+      } else {
+        console.error("Error message:", err.message);
+        toast.error("An error occurred. Please try again.");
       }
-    );
-
-    console.log("Request submitted successfully:", response.data);
-    toast.success("Food request submitted successfully!");
-
-    // Clear form
-    setIsModalOpen(false);
-    setLocation("");
-    setReason("");
-    setContact("");
-  } catch (err) {
-    console.error("Food request error:", err);
-
-    if (err.response) {
-      console.error("Response error:", err.response.status, err.response.data);
-      toast.error(err.response.data?.message || "Failed to submit request");
-    } else if (err.request) {
-      console.error("Request made but no response received");
-      toast.error("No response from server. Check if backend is running on localhost:5000");
-    } else {
-      console.error("Error message:", err.message);
-      toast.error("An error occurred. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
-  } finally {
-    setSubmitting(false);
-  }
-};
-
+  };
 
   const handleModalClose = () => {
     if (!submitting) {
@@ -177,18 +221,18 @@ const handleRequestSubmit = async (e) => {
     );
   }
 
+  const isOwner = user && food && food.donatorEmail === user.email;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white px-4 py-16 relative">
       <Toaster position="top-right" />
       
-      {/* Background decorations */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
         <div className="absolute top-20 left-10 w-96 h-96 bg-orange-500/30 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-yellow-500/30 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative max-w-5xl mx-auto">
-        {/* Back button */}
         <button
           onClick={() => navigate("/available-foods")}
           className="group flex items-center gap-2 mb-8 text-gray-400 hover:text-orange-400 transition-colors"
@@ -204,9 +248,7 @@ const handleRequestSubmit = async (e) => {
           <span className="font-medium">Back to Available Foods</span>
         </button>
 
-        {/* Food card */}
         <div className="bg-gradient-to-br from-gray-800/50 via-gray-900/50 to-black/50 backdrop-blur-xl rounded-3xl border border-gray-800/50 overflow-hidden shadow-2xl">
-          {/* Food image header */}
           <div className="relative h-72 sm:h-96 md:h-[32rem] w-full overflow-hidden">
             <img
               src={food.foodImage || "https://via.placeholder.com/600x400"}
@@ -215,7 +257,6 @@ const handleRequestSubmit = async (e) => {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
             
-            {/* Availability badge */}
             {isAvailable ? (
               <div className="absolute top-6 right-6 flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2 rounded-full shadow-lg backdrop-blur-sm">
                 <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
@@ -228,7 +269,6 @@ const handleRequestSubmit = async (e) => {
               </div>
             )}
             
-            {/* Food name overlay */}
             <div className="absolute bottom-6 left-6 right-6">
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white drop-shadow-2xl">
                 {food.foodName}
@@ -236,13 +276,9 @@ const handleRequestSubmit = async (e) => {
             </div>
           </div>
 
-          {/* Food details */}
           <div className="p-6 sm:p-8 md:p-12 space-y-8">
-            {/* Information grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Left column */}
               <div className="space-y-6">
-                {/* Quantity */}
                 <div className="flex items-start gap-4 p-4 rounded-2xl bg-gradient-to-br from-orange-500/10 to-yellow-500/10 border border-orange-500/20">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-yellow-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -257,7 +293,6 @@ const handleRequestSubmit = async (e) => {
                   </div>
                 </div>
 
-                {/* Donator */}
                 <div className="flex items-start gap-4 p-4 rounded-2xl bg-gradient-to-br from-orange-500/10 to-yellow-500/10 border border-orange-500/20">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-yellow-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -271,9 +306,7 @@ const handleRequestSubmit = async (e) => {
                 </div>
               </div>
 
-              {/* Right column */}
               <div className="space-y-6">
-                {/* Pickup Location */}
                 <div className="flex items-start gap-4 p-4 rounded-2xl bg-gradient-to-br from-orange-500/10 to-yellow-500/10 border border-orange-500/20">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-yellow-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -287,7 +320,6 @@ const handleRequestSubmit = async (e) => {
                   </div>
                 </div>
 
-                {/* Expiry Date */}
                 <div className="flex items-start gap-4 p-4 rounded-2xl bg-gradient-to-br from-orange-500/10 to-yellow-500/10 border border-orange-500/20">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-yellow-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -304,7 +336,6 @@ const handleRequestSubmit = async (e) => {
               </div>
             </div>
 
-            {/* Additional Notes */}
             {food.additionalNotes && food.additionalNotes !== "None" && (
               <div className="p-6 rounded-2xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 border border-gray-700">
                 <div className="flex items-start gap-3 mb-3">
@@ -319,7 +350,6 @@ const handleRequestSubmit = async (e) => {
               </div>
             )}
 
-            {/* Request Food Button */}
             <button
               onClick={() => {
                 if (!user) {
@@ -345,11 +375,81 @@ const handleRequestSubmit = async (e) => {
               </span>
               <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>
+
+            {isOwner && (
+              <div className="mt-12">
+                <h2 className="text-2xl font-bold text-white mb-6">Food Requests</h2>
+                
+                {loadingRequests ? (
+                  <div className="flex justify-center py-8">
+                    <div className="inline-block w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                ) : foodRequests.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400">
+                    <p>No requests yet for this food.</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 border border-orange-500/20">
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-orange-400">Requester Name</th>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-orange-400">Email</th>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-orange-400">Location</th>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-orange-400">Reason</th>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-orange-400">Contact</th>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-orange-400">Status</th>
+                          <th className="px-4 py-3 text-center text-sm font-semibold text-orange-400">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {foodRequests.map((request) => (
+                          <tr key={request._id} className="border border-gray-700 hover:bg-gray-800/30 transition-colors">
+                            <td className="px-4 py-3 text-sm text-white">{request.requesterName}</td>
+                            <td className="px-4 py-3 text-sm text-gray-300">{request.requesterEmail}</td>
+                            <td className="px-4 py-3 text-sm text-gray-300">{request.location}</td>
+                            <td className="px-4 py-3 text-sm text-gray-300 max-w-xs truncate">{request.reason}</td>
+                            <td className="px-4 py-3 text-sm text-gray-300">{request.contactNo}</td>
+                            <td className="px-4 py-3 text-sm">
+                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                request.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
+                                request.status === 'accepted' ? 'bg-green-500/20 text-green-400' :
+                                request.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
+                                'bg-blue-500/20 text-blue-400'
+                              }`}>
+                                {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-center">
+                              {request.status === 'pending' && (
+                                <div className="flex gap-2 justify-center">
+                                  <button
+                                    onClick={() => handleAcceptRequest(request._id)}
+                                    className="px-3 py-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-semibold rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all"
+                                  >
+                                    Accept
+                                  </button>
+                                  <button
+                                    onClick={() => handleRejectRequest(request._id)}
+                                    className="px-3 py-1 bg-gradient-to-r from-red-500 to-rose-500 text-white text-xs font-semibold rounded-lg hover:from-red-600 hover:to-rose-600 transition-all"
+                                  >
+                                    Reject
+                                  </button>
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Request Modal */}
       <Modal
         isOpen={isModalOpen}
         onRequestClose={handleModalClose}
@@ -370,7 +470,6 @@ const handleRequestSubmit = async (e) => {
         </div>
 
         <form onSubmit={handleRequestSubmit} className="space-y-4">
-          {/* Location Input */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Your Location <span className="text-red-400">*</span>
@@ -386,7 +485,6 @@ const handleRequestSubmit = async (e) => {
             />
           </div>
 
-          {/* Reason Textarea */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Why do you need this food? <span className="text-red-400">*</span>
@@ -401,7 +499,6 @@ const handleRequestSubmit = async (e) => {
             />
           </div>
 
-          {/* Contact Input */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Contact Number <span className="text-red-400">*</span>
@@ -417,7 +514,6 @@ const handleRequestSubmit = async (e) => {
             />
           </div>
 
-          {/* Buttons */}
           <div className="flex justify-end gap-4 pt-4">
             <button
               type="button"

@@ -55,10 +55,25 @@ export default function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
-        setUser({
-          name: currentUser.displayName || currentUser.email,
+        // Get the name - prefer displayName, but also check metadata for Google users
+        let userName = currentUser.displayName;
+        
+        // If no displayName but user exists, try to get name from email
+        if (!userName) {
+          userName = currentUser.email.split('@')[0]; // fallback to email prefix
+        }
+        
+        console.log("✅ User logged in:", {
+          name: userName,
           email: currentUser.email,
-          photoURL: currentUser.photoURL,
+          displayName: currentUser.displayName,
+          photoURL: currentUser.photoURL
+        });
+
+        setUser({
+          name: userName,
+          email: currentUser.email,
+          photoURL: currentUser.photoURL || "",
           uid: currentUser.uid,
         });
       } else {
