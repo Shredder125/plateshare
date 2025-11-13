@@ -9,14 +9,14 @@ import { FaXTwitter } from "react-icons/fa6";
 
 export default function Footer() {
   return (
-    <footer className="relative bg-gradient-to-b from-black via-gray-900 to-black text-gray-300 pt-20 pb-8 border-t border-gray-800/50 overflow-hidden">
+    <footer className="relative bg-gradient-to-b from-black via-gray-900 to-black text-gray-300 pt-16 md:pt-20 pb-8 border-t border-gray-800/50 overflow-hidden">
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-yellow-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-0 left-1/4 w-72 h-72 sm:w-96 sm:h-96 bg-orange-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-72 h-72 sm:w-96 sm:h-96 bg-yellow-500/20 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-16">
+      <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 sm:gap-16 lg:gap-16">
           <div className="space-y-6">
             <div className="flex items-center gap-3 group">
               <div className="relative">
@@ -40,7 +40,6 @@ export default function Footer() {
               </span>
             </div>
           </div>
-
           <div>
             <h3 className="text-lg font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400">
               Quick Links
@@ -128,12 +127,11 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-
           <div>
             <h3 className="text-lg font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400">
               Stay Connected
             </h3>
-            <div className="flex gap-3 mb-8">
+            <div className="flex flex-wrap gap-3 mb-8">
               <a
                 href="https://facebook.com"
                 target="_blank"
@@ -201,10 +199,11 @@ export default function Footer() {
                 />
                 <button
                   type="submit"
-                  className="px-5 py-3 bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-sm rounded-xl hover:from-orange-400 hover:to-yellow-400 transition-all hover:scale-105 shadow-lg hover:shadow-orange-500/50"
+                  className="flex-shrink-0 px-5 py-3 bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-sm rounded-xl hover:from-orange-400 hover:to-yellow-400 transition-all hover:scale-105 shadow-lg hover:shadow-orange-500/50"
                 >
+
                   <svg
-                    className="w-5 h-5"
+                    className="w-4 h-4 md:w-5 md:h-5" 
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -221,13 +220,12 @@ export default function Footer() {
             </div>
           </div>
         </div>
-
-        <div className="mt-16 pt-8 border-t border-gray-800/50">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-500">
-            <p className="flex items-center gap-2">
+        <div className="mt-12 md:mt-16 pt-8 border-t border-gray-800/50">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-500 text-center md:text-left"> {/* Added text-center for mobile */}
+            <p className="flex items-center justify-center md:justify-start gap-2">
               © {new Date().getFullYear()} PlateShare. All rights reserved.
             </p>
-            <p className="flex items-center gap-2">
+            <p className="flex items-center justify-center md:justify-start gap-2">
               Built with
               <span className="inline-block animate-pulse text-red-500">❤️</span>
               for the community

@@ -1,5 +1,6 @@
 import { useState, useEffect, createContext, useContext } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import Hero from "./components/Hero";
 import HowItWorks from "./components/HowItWorks";
 import FeaturedSection from "./components/FeaturedSection";
@@ -48,32 +49,66 @@ function Toast({ message, type, onClose }) {
   );
 }
 
+const ProgressBarLoader = () => (
+  <motion.div
+    className="fixed top-0 left-0 right-0 z-[10000] h-1"
+    initial={{ opacity: 1 }}
+    animate={{ opacity: 0, transition: { duration: 0.2, delay: 0.6 } }}
+  >
+    <motion.div
+      className="h-full bg-gradient-to-r from-green-400 to-teal-500 shadow-xl"
+      initial={{ width: "0%" }}
+      animate={{ width: "100%" }}
+      transition={{ duration: 0.8, ease: "linear" }}
+    />
+  </motion.div>
+);
+
+const flashyVariants = {
+  hidden: { y: 150, opacity: 0, scale: 0.9, rotateX: -15 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    scale: 1,
+    rotateX: 0,
+    transition: {
+      type: "spring",
+      stiffness: 70,
+      damping: 10,
+      duration: 0.6,
+    },
+  },
+};
+
 export default function App() {
   const [user, setUser] = useState(null);
   const [toasts, setToasts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
-        // Get the name - prefer displayName, but also check metadata for Google users
-        let userName = currentUser.displayName;
-        
-        // If no displayName but user exists, try to get name from email
-        if (!userName) {
-          userName = currentUser.email.split('@')[0]; // fallback to email prefix
-        }
-        
-        console.log("✅ User logged in:", {
-          name: userName,
-          email: currentUser.email,
-          displayName: currentUser.displayName,
-          photoURL: currentUser.photoURL
-        });
+        const providerProfilePic =
+          currentUser.photoURL ||
+          currentUser.providerData[0]?.photoURL ||
+          "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+
+        let userName =
+          currentUser.displayName || currentUser.email.split("@")[0];
 
         setUser({
           name: userName,
           email: currentUser.email,
-          photoURL: currentUser.photoURL || "",
+          photoURL: providerProfilePic,
           uid: currentUser.uid,
         });
       } else {
@@ -101,75 +136,109 @@ export default function App() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
+  const FlashyWrapper = ({ children, delay = 0, minHeight }) => (
+    <motion.div
+      variants={flashyVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2, margin: "0px 0px 300px 0px" }}
+      transition={{ delay: delay }}
+      style={{ minHeight: minHeight || "auto" }}
+    >
+      {children}
+    </motion.div>
+  );
+
+  const hideNavPaths = ["/login", "/register"];
+  const shouldShowNav = !hideNavPaths.includes(location.pathname);
+
   return (
     <ToastContext.Provider value={toast}>
-      <Navbar user={user} />
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              <Hero />
-              <FeaturedSection />
-              <CommunityStats />
-              <HowItWorks />
-              <Footer />
-            </>
-          }
-        />
-        <Route
-          path="/available-foods"
-          element={
-            <>
-              <AvailableFoods />
-              <Footer />
-            </>
-          }
-        />
-        <Route
-          path="/add-food"
-          element={
-            <PrivateRoute>
-              <AddFood />
-              <Footer />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/food/:_id"
-          element={
-            <PrivateRoute>
-              {/* Pass user as prop */}
-              <FoodDetails user={user} />
-              <Footer />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/manage-my-foods"
-          element={
-            <PrivateRoute>
-              <ManageMyFoods user={user} />
-              <Footer />
-            </PrivateRoute>
-          }
-        />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route
-          path="*"
-          element={
-            <>
-              <ErrorPage />
-              <Footer />
-            </>
-          }
-        />
-      </Routes>
-      <div className="fixed top-4 right-4 z-[9999] max-w-sm">
-        {toasts.map((toast) => (
-          <Toast key={toast.id} {...toast} onClose={() => removeToast(toast.id)} />
-        ))}
+      <div className="w-full h-screen overflow-x-hidden overflow-y-auto">
+        {shouldShowNav && <Navbar user={user} />}
+        {loading && <ProgressBarLoader />}
+
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <FlashyWrapper delay={0} minHeight="100vh">
+                  <Hero />
+                </FlashyWrapper>
+                <FlashyWrapper delay={0.1}>
+                  <FeaturedSection />
+                </FlashyWrapper>
+                <FlashyWrapper delay={0.2}>
+                  <CommunityStats />
+                </FlashyWrapper>
+                <FlashyWrapper delay={0.1}>
+                  <HowItWorks />
+                </FlashyWrapper>
+                <FlashyWrapper delay={0.2}>
+                  <Footer />
+                </FlashyWrapper>
+              </>
+            }
+          />
+          <Route
+            path="/available-foods"
+            element={
+              <>
+                <AvailableFoods />
+                <Footer />
+              </>
+            }
+          />
+          <Route
+            path="/add-food"
+            element={
+              <PrivateRoute>
+                <AddFood />
+                <Footer />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/food/:_id"
+            element={
+              <PrivateRoute>
+                <FoodDetails user={user} />
+                <Footer />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/manage-my-foods"
+            element={
+              <PrivateRoute>
+                <ManageMyFoods user={user} />
+                <Footer />
+              </PrivateRoute>
+            }
+          />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route
+            path="*"
+            element={
+              <>
+                <ErrorPage />
+                <Footer />
+              </>
+            }
+          />
+        </Routes>
+
+        <div className="fixed top-4 right-4 z-[9999] max-w-sm">
+          {toasts.map((toast) => (
+            <Toast
+              key={toast.id}
+              {...toast}
+              onClose={() => removeToast(toast.id)}
+            />
+          ))}
+        </div>
       </div>
     </ToastContext.Provider>
   );

@@ -67,10 +67,10 @@ export default function Login() {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
 
-    // Google users have a displayName already, but let's ensure it's set
+  
     if (!user.displayName) {
       await updateProfile(user, {
-        displayName: user.email.split('@')[0], // Use email prefix as fallback
+        displayName: user.email.split('@')[0],
       });
     }
 
